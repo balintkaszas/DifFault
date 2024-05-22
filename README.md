@@ -51,7 +51,13 @@ single_peak = dp.Peak(kappa_max, N_fourier, Ch00, burgers_vector, lattice_consta
 spectrum = dp.generate_multiple_peaks(single_peak, m, sigma, rho, Rstar, q, peak_intensities = intensities, planar_fault_probability = B)
 ```
 
-![image](docs/Sample_spectrum.png)
+![image](docs/Sample_spectrum.jpg)
+
+The ```examples/``` folder contains further examples and demonstrations of the usage of the library. These include 
+
+- Discussion of the individual profiles, i.e., associated to size effects, planar faults, and dislocations. 
+- Generating multiple XRD patterns simulateously with Numpy and PyTorch
+- A basic example of X-ray Line Profile Analysis (XLPA) [2]. We use a simple regression routine implemented in SciPy to determine the microstructural parameters of an observed spectrum. 
 
 
 ## References
