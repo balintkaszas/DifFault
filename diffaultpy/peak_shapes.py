@@ -129,6 +129,7 @@ class Peak():
             h (int): Miller index
             k (int): Miller index
             l (int): Miller index
+            intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic'. Defaults to 'intrinsic'.
         Returns:
             array: Fourier transform of the crystal structure
         """
@@ -202,6 +203,7 @@ class Peak():
             g (float): peak location
             h, k, l (int): Miller indices
             planar_fault_probability (float or array): Stacking fault probability. Only used for the fcc phase. Defaults to None.
+            intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic' for stacking faults. Defaults to 'intrinsic'.
 
         Returns:
             array: Convolution of the profiles
@@ -264,10 +266,10 @@ def generate_multiple_peaks(single_peak,
         rho_or_rhostar (float or array): dislocation density or reduced density, depending on the use_reduced_rho flag in the constructor
         Rstar (float or array): Cutoff radius for the dislocations
         q (float or array): _description_
-        peakIntensities (array): same shape as single_peak.structure.miller_indices, contains the peak intensities
+        peakIntensities (array): Can be a multi-dimensional array containing the peak intensities
         maximalPeakIntensity (int, optional): Normalize the largest peak to this value. Defaults to 1.
-        planarFaultProbability (array, optional): Probability of planar faults for the fcc phase. Defaults to None.
-        offset (array, optional): same shape as peak_intensities. Offset of the peak location with respect to the theoretical one. which is h^2 + k^2 + l^2. Defaults to None.
+        planarFaultProbability (float or array): Probability of planar faults for the fcc phase. Defaults to None.
+        offset (array, optional): Same shape as peak_intensities. Offset of the peak location with respect to the theoretical one, which is h^2 + k^2 + l^2. Defaults to None.
         intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic' for stacking faults. Defaults to 'intrinsic'.
     Returns:
         array: spectrum 

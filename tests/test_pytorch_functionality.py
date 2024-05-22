@@ -1,4 +1,4 @@
-from cmwp_profiles.peak_shapes import Peak, generate_multiple_peaks
+from diffaultpy.peak_shapes import Peak, generate_multiple_peaks
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ def test_torch_differential():
     sigma = peak_torch.math.array([1e-3, 1e-3, 1e-3])
     intensities = torch.tensor(np.random.rand(5,3), requires_grad=True)
     offsets = torch.tensor(np.random.rand(5,3) * 1e-5, requires_grad=True)
-    multipeaks_torch = generate_multiple_peaks(peak_torch, m, sigma, beta, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets)
+    multipeaks_torch = generate_multiple_peaks(peak_torch, m, sigma, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets, planar_fault_probability = beta)
     value = torch.sum(multipeaks_torch**2)
     value.backward()
     assert np.allclose(np.isnan(q.grad), 0)
@@ -43,12 +43,12 @@ def test_torch_mse():
     sigma = peak_torch.math.array([1e-3, 1e-3, 1e-3])
     intensities = torch.tensor(np.random.rand(5,3), requires_grad=True)
     offsets = torch.tensor(np.random.rand(5,3) * 1e-5, requires_grad=True)
-    multipeaks_torch = generate_multiple_peaks(peak_torch, m, sigma, beta, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets)
+    multipeaks_torch = generate_multiple_peaks(peak_torch, m, sigma, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets, planar_fault_probability = beta)
     loss = torch.nn.MSELoss()
     output = loss(multipeaks_torch, multipeaks_torch* 0)
     lsq_value = torch.mean(multipeaks_torch**2)
     assert torch.allclose(lsq_value, output)
                                                              
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    test_torch_differential()
+#     test_torch_differential()

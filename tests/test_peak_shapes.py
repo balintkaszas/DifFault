@@ -1,5 +1,5 @@
-from cmwp_profiles.utils import shift_each_column_numpy, shift_each_column_torch
-from cmwp_profiles.peak_shapes import Peak, generate_multiple_peaks
+from diffaultpy.utils import shift_each_column_numpy, shift_each_column_torch
+from diffaultpy.peak_shapes import Peak, generate_multiple_peaks
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
@@ -45,7 +45,19 @@ def test_delta():
     peak_torch = Peak(14, 1024, 0.1, 0.255, 0.36, approximation_wilkens='polynomial', backend='torch', dtype = torch.float32, stacking_or_twin_fault='twin')
     delta_int = peak._delta_hkl(0.36, 1, 0, 1, 0.01)
     delta_int_torch = peak_torch._delta_hkl(peak_torch.math.array(0.36), peak_torch.math.array(1), peak_torch.math.array(0), peak_torch.math.array(1), peak_torch.math.array(0.01))
+    assert np.allclose(delta_int, 0.)
+    assert np.allclose(delta_int_torch, 0.)
+    return
+
+
+def test_delta_stacking():
+    peak = Peak(14, 1024, 0.1, 0.255, 0.36, stacking_or_twin_fault='stacking')
+    delta_int = peak._delta_hkl(0.36, 1, 0, 1, 0.01)
+    peak_torch = Peak(14, 1024, 0.1, 0.255, 0.36, approximation_wilkens='polynomial', backend='torch', dtype = torch.float32, stacking_or_twin_fault='stacking')
+    delta_int = peak._delta_hkl(0.36, 1, 0, 1, 0.01)
+    delta_int_torch = peak_torch._delta_hkl(peak_torch.math.array(0.36), peak_torch.math.array(1), peak_torch.math.array(0), peak_torch.math.array(1), peak_torch.math.array(0.01))
     assert np.allclose(delta_int, -0.0115126275106)
+    assert np.allclose(delta_int_torch, -0.0115126275106)
     return
 
 def test_shift_each_column():
@@ -73,14 +85,14 @@ def test_fourier_coefficients_stacking_fault():
     l = peak.math.array(1)
     beta = peak.math.array([0.02, 0.02, 0.02])
 
-    profile_stacking = peak.fourier_coefficients_stacking_fault(L, beta, h, k, l)
+    profile_stacking = peak.fourier_coefficients_planar_fault(L, beta, h, k, l)
     lengthOfFrame = 2 * peak_torch.max_range_diffraction_vector
     L = peak_torch.math.fftfreq(peak_torch.Nfourier, lengthOfFrame / peak_torch.Nfourier).reshape(-1,1 ) + 1e-14
     h = peak_torch.math.array(1)
     k = peak_torch.math.array(0)
     l = peak_torch.math.array(1)
     beta = peak_torch.math.array([0.02, 0.02, 0.02])
-    profile_stacking_torch = peak_torch.fourier_coefficients_stacking_fault(L, beta, h, k, l)
+    profile_stacking_torch = peak_torch.fourier_coefficients_planar_fault(L, beta, h, k, l)
     assert np.allclose(profile_stacking, profile_stacking_torch.numpy(), atol=1e-5)
     return
 
@@ -144,9 +156,10 @@ def test_generate_convolutional_profile():
     peak_torch = Peak(14, 2048, 0.1, 0.255, 0.36, stacking_or_twin_fault='twin', backend='torch')
     lengthOfFrame = 2 * peak.max_range_diffraction_vector
     L = peak.math.fftfreq(peak.Nfourier, lengthOfFrame / peak.Nfourier).reshape(-1, 1) + 1e-7
-    h = peak.math.array(1)
-    k = peak.math.array(1)
-    l = peak.math.array(1)
+    h = peak.math.array([1])
+    k = peak.math.array([1])
+    l = peak.math.array([1])
+    
     g = peak.math.array([5.3, 5.3, 5.3])
     q = peak.math.array([1.8])
     rho = peak.math.array([0.1, 0.1, 0.1])
@@ -154,7 +167,7 @@ def test_generate_convolutional_profile():
     beta = peak.math.array([0.02, 0.02, 0.02])
     m = peak.math.array([50, 50, 50])
     sigma = peak.math.array([1e-3, 1e-3, 1e-3])
-    profile = peak.generate_convolutional_profile(L, m, sigma, beta, rho, Rstar, q, g, h, k, l)
+    profile = peak.generate_convolutional_profile(L, m, sigma, rho, Rstar, q, g, h, k, l, planar_fault_probability = beta)
     lengthOfFrame = 2 * peak_torch.max_range_diffraction_vector
     L = peak_torch.math.fftfreq(peak_torch.Nfourier, lengthOfFrame / peak_torch.Nfourier).reshape(-1, 1) + 1e-7
     h = peak_torch.math.array([1])
@@ -167,12 +180,8 @@ def test_generate_convolutional_profile():
     beta = peak_torch.math.array([0.02, 0.02, 0.02])
     m = peak_torch.math.array([50,50, 50])
     sigma = peak_torch.math.array([1e-3, 1e-3, 1e-3])
-    profile_torch = peak_torch.generate_convolutional_profile(L, m, sigma, beta, rho, Rstar, q, g, h, k, l)
-    #print(profile)
-    #plt.plot(profile[:,0])
-    #plt.plot(profile_torch[:,0].numpy())
+    profile_torch = peak_torch.generate_convolutional_profile(L, m, sigma, rho, Rstar, q, g, h, k, l, planar_fault_probability = beta)
 
-    #plt.show()
     assert np.allclose(profile, profile_torch.numpy(), atol=1e-5)
     return 
 
@@ -193,7 +202,7 @@ def test_generate_multiple_peaks():
     sigma = peak.math.array([1e-3, 1e-3, 1e-3])
     intensities = np.random.rand(5,3)
     offsets = np.random.rand(5,3) * 1e-5
-    multipeaks = generate_multiple_peaks(peak, m, sigma, beta, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets)  
+    multipeaks = generate_multiple_peaks(peak, m, sigma, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets, planar_fault_probability = beta)  
     
     lengthOfFrame = 2 * peak_torch.max_range_diffraction_vector
     L = peak_torch.math.fftfreq(peak_torch.Nfourier, lengthOfFrame / peak_torch.Nfourier).reshape(-1, 1) + 1e-7
@@ -209,7 +218,7 @@ def test_generate_multiple_peaks():
     sigma = peak_torch.math.array([1e-3, 1e-3, 1e-3])
     intensities = torch.tensor(intensities)
     offsets = torch.tensor(offsets)
-    multipeaks_torch = generate_multiple_peaks(peak_torch, m, sigma, beta, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets)
+    multipeaks_torch = generate_multiple_peaks(peak_torch, m, sigma, rho, Rstar, q, intensities, maximal_peakIntensity = 1, offset = offsets, planar_fault_probability = beta)
     #for i in range(3):
     #    plt.plot(peak.positive_diffraction_vectors, multipeaks[:,i])
     #plt.show()
@@ -221,6 +230,9 @@ def test_generate_multiple_peaks():
 
                                
 #if __name__ == "__main__":
+    #test_generate_multiple_peaks()
+    #test_generate_convolutional_profile()
+    #test_delta()
     # test_peak_init()
     # test_wilkens_approx()
     # test_fwhm()

@@ -1,4 +1,4 @@
-from cmwp_profiles.math_backend import MathBackend
+from diffaultpy.math_backend import MathBackend
 
 
 def test_math_backend_numpy():
