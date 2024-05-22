@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import special
-from cmwp_profiles.utils import shift_each_column_torch, shift_each_column_numpy
+from diffaultpy.utils import shift_each_column_torch, shift_each_column_numpy
 import torch
 
 class MathBackend:

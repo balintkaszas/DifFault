@@ -1,9 +1,9 @@
 
 import numpy as np 
-from cmwp_profiles.math_backend import MathBackend
-from cmwp_profiles.wilkens_function import WilkensFunction
+from diffaultpy.math_backend import MathBackend
+from diffaultpy.wilkens_function import WilkensFunction
 
-from cmwp_profiles.utils import get_crystal_structure
+from diffaultpy.utils import get_crystal_structure
 class Peak():
     '''
     General class containing the parameters and functions to characterize a single peak. 

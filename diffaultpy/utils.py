@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from scipy import integrate
-from cmwp_profiles.crystal_structure import FCC_structure, BCC_structure, SC_structure
+from diffaultpy.crystal_structure import FCC_structure, BCC_structure, SC_structure
 
 
 def exact_integral_for_wilkens(x):

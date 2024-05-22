@@ -1,4 +1,4 @@
-import cmwp_profiles.crystal_structure as crystal_structure
+import diffaultpy.crystal_structure as crystal_structure
 
 
 def test_FCC_structure():

@@ -1,5 +1,5 @@
-from cmwp_profiles.math_backend import MathBackend
-from cmwp_profiles.utils import exact_integral_for_wilkens
+from diffaultpy.math_backend import MathBackend
+from diffaultpy.utils import exact_integral_for_wilkens
 import numpy as np
 from scipy.interpolate import interp1d 
 
