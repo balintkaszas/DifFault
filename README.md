@@ -1,4 +1,4 @@
-# Diffault
+# DifFault
 
 ## Simulation of diffraction patterns of faulted crystals
 
