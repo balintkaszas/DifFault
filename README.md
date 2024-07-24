@@ -34,7 +34,8 @@ pip install -e .
 After installation, the XRD patterns for an FCC crystal can be simulated by initializing a ```Peak``` object and specifying the microstructural parameters [2] for the function ```generate_multiple_peaks```. 
 
 ```
-import diffaultpy as dp
+from diffaultpy.peak_shapes import Peak, generate_multiple_peaks
+import numpy as np 
 kappa_max = 14
 N_fourier = 8192
 lattice_constant = 0.36
@@ -46,9 +47,9 @@ Rstar = 5
 sigma = 0.1
 q = 3
 B = 0.05
-intensities = np.random.rand(5, 1)
-single_peak = dp.Peak(kappa_max, N_fourier, Ch00, burgers_vector, lattice_constant
-spectrum = dp.generate_multiple_peaks(single_peak, m, sigma, rho, Rstar, q, peak_intensities = intensities, planar_fault_probability = B)
+intensities = np.array([0.65, 0.25, 0.2, 0.16, 0.9]).reshape(5, 1)
+single_peak = Peak(kappa_max, N_fourier, Ch00, burgers_vector, lattice_constant)
+spectrum = generate_multiple_peaks(single_peak, m, sigma, rho, Rstar, q, peak_intensities = intensities, planar_fault_probability = B)
 ```
 
 ![image](docs/Sample_spectrum.jpg)
