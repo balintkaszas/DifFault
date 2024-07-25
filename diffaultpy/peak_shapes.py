@@ -288,7 +288,7 @@ def generate_multiple_peaks(single_peak,
     spectrum = 1j*single_peak.math.zeros((single_peak.diffraction_vectors.shape[0], peak_intensities.shape[1])) # need this to be a complex array
     L = single_peak.math.fftfreq(single_peak.Nfourier, lengthOfFrame / single_peak.Nfourier).reshape(-1, 1) + 1e-7 # because of a singularity in the wilkens() fn, we regularize L
     for i in range(numberofPeaks):
-        h = single_peak.math.array(single_peak.structure.miller_indices[i][0]) # get Miller indicesto make sure of proper broadcast
+        h = single_peak.math.array(single_peak.structure.miller_indices[i][0]) # get Miller indices to make sure of proper broadcast
         k = single_peak.math.array(single_peak.structure.miller_indices[i][1])
         l = single_peak.math.array(single_peak.structure.miller_indices[i][2])
         sqrsum = h**2 + k**2 + l**2 + offset[i, :]

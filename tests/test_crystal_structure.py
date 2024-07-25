@@ -1,5 +1,5 @@
 import diffaultpy.crystal_structure as crystal_structure
-
+import numpy as np
 
 def test_FCC_structure():
     fcc = crystal_structure.FCC_structure()
@@ -32,3 +32,11 @@ def test_BCC_structure():
                                   [2, 2, 0],
                                   [3, 1, 0]]
     return
+
+def test_generate_miller_index_in_range():
+    hkl_sc = crystal_structure.generate_miller_index_in_range(8)
+    sc = crystal_structure.SC_structure(8)
+    assert np.allclose(np.array(sc.miller_indices), hkl_sc)
+
+if __name__ == "__main__":
+    test_generate_miller_index_in_range()
