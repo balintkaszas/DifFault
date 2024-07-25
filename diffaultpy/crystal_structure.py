@@ -1,6 +1,8 @@
 import numpy as np
 
 def find_triples_for_sqrsum(N):
+    """Generate all Miller indices h, k, l such that h^2 + k^2 + l^2 = N
+    Different permutations are not counted: The indices are ordered according to h>=k>=l"""
     triples = set()
     for h in range(N + 1):
         for k in range(h, N + 1):
@@ -12,8 +14,8 @@ def find_triples_for_sqrsum(N):
     return np.array(list(triples))
 
 def generate_miller_index_in_range(kappa_range):
-    """ Generate miller indices in the given range of non-dimensional kappas. 
-
+    """ Generate Miller indices in the given range of non-dimensional kappas. 
+    These reflections are all present in a simple cubic lattice. 
     """
     kappa_int = int(kappa_range)
     all_hkl = []
@@ -22,6 +24,32 @@ def generate_miller_index_in_range(kappa_range):
         if temp.shape[0] > 0:
             all_hkl.extend(temp)
     return np.array(all_hkl)
+
+def is_reflection_observed_fcc(h, k, l):
+    """Check whether the given reflection h,k,l is present in an FCC lattice.
+    For an FCC lattice, we only see a reflection if either 
+    - h, k, l  are all even
+    - h, k, l are all odd
+    """
+    if h%2 == 0 and k%2 == 0 and l%2 == 0:
+        return True
+    
+    elif h%2 == 1 and k%2 == 1 and l%2 == 1:
+        return True
+    else:
+        return False
+
+
+def is_reflection_observed_bcc(h, k, l):
+    """Check whether the given reflection h,k,l is present in a BCC lattice.
+    For a BCC lattice, we only see a reflection if 
+    - h + k + l is even
+    """
+    if (h + k + l)%2 == 0:
+        return True
+    else:
+        return False
+
 
 
 class FCC_structure():
@@ -75,6 +103,29 @@ class SC_structure_legacy():
 
 
 class BCC_structure():
+    """Contains the Miller-indices for a Body Centered Cubic (BCC) crystal structure.
+    """
+    def __init__(self, kappa_range):
+        
+        self.miller_indices = [[1, 1, 0],
+                              [2, 0, 0],
+                              [2, 1, 1],
+                              [2, 2, 0],
+                              [3, 1, 0]]
+        return 
+    def remove_systematic_abscences(self, miller_indices):
+        n_peaks = miller_indices.shape[0]
+        surviving_miller_index = [] 
+        for n in range(n_peaks + 1):
+            h, k, l = miller_indices[n, :]
+            if is_reflection_observed_bcc(h, k, l):
+                surviving_miller_index.append([h, k, l])
+        return np.array(surviving_miller_index)
+
+
+
+
+class BCC_structure_legacy():
     """Contains the Miller-indices for a Body Centered Cubic (BCC) crystal structure.
     """
     def __init__(self):

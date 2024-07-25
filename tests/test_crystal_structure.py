@@ -25,7 +25,7 @@ def test_FCC_structure():
     return
 
 def test_BCC_structure():
-    bcc = crystal_structure.BCC_structure()
+    bcc = crystal_structure.BCC_structure(12)
     assert bcc.miller_indices == [[1, 1, 0],
                                   [2, 0, 0],
                                   [2, 1, 1],

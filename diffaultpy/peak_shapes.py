@@ -61,7 +61,8 @@ class Peak():
         self.diffraction_vectors = self.math.linspace(-self.max_range_diffraction_vector,
                                                 self.max_range_diffraction_vector,
                                                   self.Nfourier)
-        self.positive_diffraction_vectors = self.diffraction_vectors[self.diffraction_vectors >= 0]
+        self.positive_diffraction_vectors_dimensionless  = self.diffraction_vectors[self.diffraction_vectors >= 0] # kappa^2 * a^2 
+        self.positive_diffraction_vectors = np.sqrt(self.positive_diffraction_vectors_dimensionless) / self.lattice_constant # this has the same dimensions as 1 / a
         self.wilkens_function = WilkensFunction(backend, approximation_wilkens, device, dtype)
         self.wilkens_function.initialize_with_method()
         return 
@@ -291,7 +292,7 @@ def generate_multiple_peaks(single_peak,
         h = single_peak.math.array(single_peak.structure.miller_indices[i][0]) # get Miller indices to make sure of proper broadcast
         k = single_peak.math.array(single_peak.structure.miller_indices[i][1])
         l = single_peak.math.array(single_peak.structure.miller_indices[i][2])
-        sqrsum = h**2 + k**2 + l**2 + offset[i, :]
+        sqrsum = h**2 + k**2 + l**2 + offset[i, :] # in dimensionless diffraction-vector units the peaks are at h^2 + k^2 + l^2
         g = sqrsum
         intensity = peak_intensities[i, :]  * maximal_peakIntensity
         singleSpectrum =  single_peak.generate_convolutional_profile(L, m, sigma, rho_or_rhostar, Rstar, q,  g, h, k, l, planar_fault_probability,
