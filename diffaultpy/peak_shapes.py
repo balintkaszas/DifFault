@@ -35,34 +35,36 @@ class Peak():
                                                         numpy.linspace() or torch.linspace().
             device (string): Device for the torch backend. Defaults to 'cpu'.
             dtype (string): Data type for the torch backend. Defaults to float.
-            max_range_diffraction_vector (float): Maxmimal allowed value for the norm of the diffraction vector
+            max_range_diffraction_vector (float): Maxmimal allowed value for the norm of the diffraction vector in 1 / nm. 
             approximation_wilkens (string): Can be 'exact', 'polynomial' or 'interpolation'. Defaults to 'exact'.
             If 'polynomial', the integral in the Wilkens function is approximated by a 5th order polynomial. 
             stacking_or_twin_fault (string): Expected type of planar faults. Can be 'stacking' or 'twin' Defaults to 'stacking'.    
             max_fourier_components (int): Number of points in the Fourier transform
             phase (str, optional): Phase of the crystal structure. Defaults to 'fcc'.
-            use_reduced_rho (bool, optional): If True, the dislocation density is normalized by the contrast factor and the burgers vector.
+            use_reduced_rho (bool, optional): If True, the dislocation density is normalized by the contrast factor and the Burgers vector.
                 In this case, the profiles are universal since they only depend on rhostar = rho * b^2 * C_h00. Defaults to False.
             minimum_fwhm (float, optional): Minimum value of the Full Width at Half Maximum, if |h+k+l| is divisible by 3.
               Defaults to 1e-2.
         """
 
-        self.max_range_diffraction_vector = max_range_diffraction_vector 
-        self.C_h00 = Ch00
-        self.burgers_vector = burgers_vector
         self.lattice_constant = lattice_constant
+        self.max_range_diffraction_vector = max_range_diffraction_vector # maximal kappa 
+        self.max_range_diffraction_vector_dimensionless = max_range_diffraction_vector ** 2 * self.lattice_constant ** 2  #maximal kappa **2 * a**2
+        self.C_h00 = Ch00 # dimensionless 
+        self.burgers_vector = burgers_vector
         self.Nfourier = max_fourier_components
         self.phase = phase
         self.planar_fault_type = stacking_or_twin_fault
         self.minimum_fwhm = minimum_fwhm
         self.math = MathBackend(backend, device, dtype)
-        self.structure = get_crystal_structure(self.phase)
         self.use_reduced_rho = use_reduced_rho
-        self.diffraction_vectors = self.math.linspace(-self.max_range_diffraction_vector,
-                                                self.max_range_diffraction_vector,
+        self.diffraction_vectors_dimensionless = self.math.linspace(-self.max_range_diffraction_vector_dimensionless,
+                                                self.max_range_diffraction_vector_dimensionless,
                                                   self.Nfourier)
-        self.positive_diffraction_vectors_dimensionless  = self.diffraction_vectors[self.diffraction_vectors >= 0] # kappa^2 * a^2 
+        self.positive_diffraction_vectors_dimensionless  = self.diffraction_vectors_dimensionless[self.diffraction_vectors_dimensionless >= 0] # kappa^2 * a^2 
         self.positive_diffraction_vectors = np.sqrt(self.positive_diffraction_vectors_dimensionless) / self.lattice_constant # this has the same dimensions as 1 / a
+        self.structure = get_crystal_structure(self.phase, self.max_range_diffraction_vector_dimensionless)
+
         self.wilkens_function = WilkensFunction(backend, approximation_wilkens, device, dtype)
         self.wilkens_function.initialize_with_method()
         return 
@@ -227,9 +229,7 @@ class Peak():
             if planar_fault_probability is None:
                 raise ValueError('Planar fault probability must be specified for the fcc phase')
             coeff_stacking_fault = coeff_dislocation * 0 * 1j # enforce complex type
-            subrefs = self.structure.subreflections['%s%s%s' %(int(h),
-                                                               int(k),
-                                                               int(l))]  # subreflections is a dictionary
+            subrefs = self.structure.generate_subreflections(h, k, l)
             for subref in subrefs:
                 hsub = self.math.array(subref[0]) # to make sure of proper broadcast
                 ksub = self.math.array(subref[1])

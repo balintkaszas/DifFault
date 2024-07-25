@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 
 def find_triples_for_sqrsum(N):
     """Generate all Miller indices h, k, l such that h^2 + k^2 + l^2 = N
@@ -13,17 +14,19 @@ def find_triples_for_sqrsum(N):
                     triples.add((l, k, h))
     return np.array(list(triples))
 
-def generate_miller_index_in_range(kappa_range):
+def generate_miller_index_in_range(kappa_sq_a_range):
     """ Generate Miller indices in the given range of non-dimensional kappas. 
     These reflections are all present in a simple cubic lattice. 
     """
-    kappa_int = int(kappa_range)
+    kappa_int = int(kappa_sq_a_range)
     all_hkl = []
     for i in range(1, kappa_int+1):
         temp = find_triples_for_sqrsum(i)
         if temp.shape[0] > 0:
             all_hkl.extend(temp)
     return np.array(all_hkl)
+
+
 
 def is_reflection_observed_fcc(h, k, l):
     """Check whether the given reflection h,k,l is present in an FCC lattice.
@@ -51,8 +54,43 @@ def is_reflection_observed_bcc(h, k, l):
         return False
 
 
-
 class FCC_structure():
+    """Contains the Miller-indices and subreflections for a Face Centered Cubic (FCC) crystal structure.
+    """
+    def __init__(self, kappa_sq_a_range):
+        
+        self.miller_indices = self.remove_systematic_abscences(
+            generate_miller_index_in_range(kappa_sq_a_range))
+        return 
+    def remove_systematic_abscences(self, miller_indices):
+        n_peaks = miller_indices.shape[0]
+        surviving_miller_index = [] 
+        for n in range(n_peaks ):
+            h, k, l = miller_indices[n, :]
+            if is_reflection_observed_fcc(h, k, l):
+                surviving_miller_index.append([h, k, l])
+        return np.array(surviving_miller_index)
+    
+    def generate_subreflections(self, h, k, l):
+        """Generate all subreflections obtained as 
+        - all permutations of h, k, l 
+        - all sign flips of one of the indices """
+        permutations = set(itertools.permutations([h, k, l]))
+        
+        sign_flips = set()
+        for perm in permutations:
+            sign_flips.add((perm[0], perm[1], perm[2]))
+            sign_flips.add((-perm[0], perm[1], perm[2]))
+            sign_flips.add((perm[0], -perm[1], perm[2]))
+            sign_flips.add((perm[0], perm[1], -perm[2]))
+        
+        result = np.array(list(sign_flips))
+        
+        return result
+
+    
+
+class FCC_structure_legacy():
     """Contains the Miller-indices and subreflections for a Face Centered Cubic (FCC) crystal structure.
     """
     def __init__(self):
@@ -83,8 +121,8 @@ class FCC_structure():
 class SC_structure():
     """Contains the Miller-indices for a Simple Cubic (SC) crystal structure.
     """
-    def __init__(self, kappa_range):
-        self.miller_indices = generate_miller_index_in_range(kappa_range)
+    def __init__(self, kappa_sq_a_range):
+        self.miller_indices = generate_miller_index_in_range(kappa_sq_a_range)
         return 
 
 
@@ -105,18 +143,15 @@ class SC_structure_legacy():
 class BCC_structure():
     """Contains the Miller-indices for a Body Centered Cubic (BCC) crystal structure.
     """
-    def __init__(self, kappa_range):
+    def __init__(self, kappa_sq_a_range):
         
-        self.miller_indices = [[1, 1, 0],
-                              [2, 0, 0],
-                              [2, 1, 1],
-                              [2, 2, 0],
-                              [3, 1, 0]]
+        self.miller_indices = self.remove_systematic_abscences(
+            generate_miller_index_in_range(kappa_sq_a_range))
         return 
     def remove_systematic_abscences(self, miller_indices):
         n_peaks = miller_indices.shape[0]
         surviving_miller_index = [] 
-        for n in range(n_peaks + 1):
+        for n in range(n_peaks ):
             h, k, l = miller_indices[n, :]
             if is_reflection_observed_bcc(h, k, l):
                 surviving_miller_index.append([h, k, l])

@@ -15,13 +15,13 @@ def exact_integral_for_wilkens(x):
     integrator = lambda y : integrate.quad(toInt, 0, y)[0]  # integrate from 0 to x
     return np.array([integrator(_) for _ in x]) # loop over the array and compute the integral
 
-def get_crystal_structure(phase):
+def get_crystal_structure(phase, max_dimensionless_kappa):
     if phase == 'fcc':
-        return FCC_structure()
+        return FCC_structure(max_dimensionless_kappa)
     elif phase == 'bcc':
-        return BCC_structure()
+        return BCC_structure(max_dimensionless_kappa)
     elif phase == 'sc':
-        return SC_structure()
+        return SC_structure(max_dimensionless_kappa)
     else:
         raise ValueError("Unsupported phase type")
     
