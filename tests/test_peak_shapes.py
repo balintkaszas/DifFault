@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 
 def test_peak_init():
-    peak = Peak(14, 1024, 0.1, 0.255, 0.36)
-    assert np.allclose(peak.diffraction_vectors, np.linspace(-14, 14, 1024))
+    peak = Peak(np.sqrt(14) / 0.36, 1024, 0.1, 0.255, 0.36)
+    assert np.allclose(peak.diffraction_vectors_dimensionless, np.linspace(-14, 14, 1024))
     assert np.sum(peak.positive_diffraction_vectors<0)  == 0
     assert peak.planar_fault_type == 'stacking'
     return 
