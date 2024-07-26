@@ -229,7 +229,7 @@ class Peak():
             if planar_fault_probability is None:
                 raise ValueError('Planar fault probability must be specified for the fcc phase')
             coeff_stacking_fault = coeff_dislocation * 0 * 1j # enforce complex type
-            subrefs = self.structure.generate_subreflections(h, k, l)
+            subrefs = self.structure.generate_subreflections(int(h), int(k), int(l))
             for subref in subrefs:
                 hsub = self.math.array(subref[0]) # to make sure of proper broadcast
                 ksub = self.math.array(subref[1])
@@ -284,9 +284,9 @@ def generate_multiple_peaks(single_peak,
     if offset is None:
         offset = single_peak.math.zeros(peak_intensities.shape) # default is no offset from theoretical value
 
-    lengthOfFrame = 2 * single_peak.max_range_diffraction_vector
+    lengthOfFrame = 2 * single_peak.max_range_diffraction_vector_dimensionless
 
-    spectrum = 1j*single_peak.math.zeros((single_peak.diffraction_vectors.shape[0], peak_intensities.shape[1])) # need this to be a complex array
+    spectrum = 1j*single_peak.math.zeros((single_peak.diffraction_vectors_dimensionless.shape[0], peak_intensities.shape[1])) # need this to be a complex array
     L = single_peak.math.fftfreq(single_peak.Nfourier, lengthOfFrame / single_peak.Nfourier).reshape(-1, 1) + 1e-7 # because of a singularity in the wilkens() fn, we regularize L
     for i in range(numberofPeaks):
         h = single_peak.math.array(single_peak.structure.miller_indices[i][0]) # get Miller indices to make sure of proper broadcast
@@ -297,7 +297,7 @@ def generate_multiple_peaks(single_peak,
         intensity = peak_intensities[i, :]  * maximal_peakIntensity
         singleSpectrum =  single_peak.generate_convolutional_profile(L, m, sigma, rho_or_rhostar, Rstar, q,  g, h, k, l, planar_fault_probability,
                                                                      intrinsic_or_extrinsic = intrinsic_or_extrinsic)
-        indextoshift = single_peak.math.get_index_to_shift(single_peak.diffraction_vectors.reshape(-1, 1), g) # select the indices to shift, given as minima of s - g
+        indextoshift = single_peak.math.get_index_to_shift(single_peak.diffraction_vectors_dimensionless.reshape(-1, 1), g) # select the indices to shift, given as minima of s - g
         singleSpectrum = single_peak.math.shift_each_column(singleSpectrum, 
                                                -1*indextoshift,
                                                 ) # shift the center of the peak to g. Using the custom function shift_each_column instead of np.roll 
@@ -305,4 +305,4 @@ def generate_multiple_peaks(single_peak,
 
     return single_peak.math.flip_each_column(
         single_peak.math.real(
-            spectrum[single_peak.diffraction_vectors >=0])) # flip the spectrum and take the real part. Discard values corresponding to negative diffraction vector lengths
+            spectrum[single_peak.diffraction_vectors_dimensionless >=0])) # flip the spectrum and take the real part. Discard values corresponding to negative diffraction vector lengths
