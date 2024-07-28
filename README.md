@@ -36,21 +36,41 @@ After installation, the XRD patterns for an FCC crystal can be simulated by init
 ```
 from diffaultpy.peak_shapes import Peak, generate_multiple_peaks
 import numpy as np 
-kappa_max = 14
+import matplotlib.pyplot as plt
+
+# simulate the first 5 peaks: h^2+k^2+l^2 < 14
+kappa_max = np.sqrt(14) /  lattice_constant # in [1 / nm]
 N_fourier = 8192
-lattice_constant = 0.36
-burgers_vector = 0.255
-Ch00 = 0.36
-rho = 0.01
-m = 20
-Rstar = 5
-sigma = 0.1
-q = 3
-B = 0.05
+lattice_constant = 0.36 # in [nm]
+burgers_vector = 0.255 # in [nm]
+Ch00 = 0.36 # dimensionless
+rho = 0.01 # in [1/nm^2]
+m = 20 # in [nm]
+Rstar = 5 # in [nm]
+sigma = 0.1 # dimensionless
+q = 3 # dimensionless
+B = 0.05 # dimensionless
 intensities = np.array([0.65, 0.25, 0.2, 0.16, 0.9]).reshape(5, 1)
-single_peak = Peak(kappa_max, N_fourier, Ch00, burgers_vector, lattice_constant)
-spectrum = generate_multiple_peaks(single_peak, m, sigma, rho, Rstar, q, peak_intensities = intensities, planar_fault_probability = B)
+single_peak = Peak(kappa_max,
+                N_fourier, 
+                Ch00,
+                burgers_vector,
+                lattice_constant)
+spectrum = generate_multiple_peaks(single_peak,
+                                m,
+                                sigma,
+                                rho,
+                                Rstar,
+                                q,
+                                peak_intensities = intensities,
+                                planar_fault_probability = B)
+# visualize the generated spectrum 
+
+plt.plot(single_peak.positive_diffraction_vectors, spectrum)
 ```
+
+
+
 
 ![image](docs/Sample_spectrum.jpg)
 
