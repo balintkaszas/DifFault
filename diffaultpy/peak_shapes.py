@@ -3,7 +3,8 @@ import numpy as np
 from diffaultpy.math_backend import MathBackend
 from diffaultpy.wilkens_function import WilkensFunction
 
-from diffaultpy.utils import get_crystal_structure
+from diffaultpy.math_backend import get_crystal_structure
+
 class Peak():
     '''
     General class containing the parameters and functions to characterize a single peak. 

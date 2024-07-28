@@ -1,5 +1,5 @@
 from diffaultpy.math_backend import MathBackend
-from diffaultpy.utils import exact_integral_for_wilkens
+from diffaultpy.math_backend import exact_integral_for_wilkens
 import numpy as np
 from scipy.interpolate import interp1d 
 
@@ -43,7 +43,7 @@ class WilkensFunction():
 
         Args:
             L (array): Wave numbers
-            Rstar (double): 
+            Rstar (float or array): cutoff radius for the dislocations
 
         Returns:
             array: value of the Wilkens function
