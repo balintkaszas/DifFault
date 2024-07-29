@@ -2,7 +2,7 @@ import numpy as np
 import itertools
 
 def find_triples_for_sqrsum(N):
-    """Generate all Miller indices h, k, l such that h^2 + k^2 + l^2 = N
+    """Generate all indices h, k, l such that h^2 + k^2 + l^2 = N
     Different permutations are not counted: The indices are ordered according to h>=k>=l"""
     triples = set()
     for h in range(N + 1):
@@ -14,8 +14,8 @@ def find_triples_for_sqrsum(N):
                     triples.add((l, k, h))
     return np.array(list(triples))
 
-def generate_miller_index_in_range(kappa_sq_a_range):
-    """ Generate Miller indices in the given range of non-dimensional kappas. 
+def generate_indices_in_range(kappa_sq_a_range):
+    """ Generate indices, h, k, l in the given range of non-dimensional kappas. 
     These reflections are all present in a simple cubic lattice. 
     """
     kappa_int = int(kappa_sq_a_range)
@@ -55,21 +55,21 @@ def is_reflection_observed_bcc(h, k, l):
 
 
 class FCC_structure():
-    """Contains the Miller-indices and subreflections for a Face Centered Cubic (FCC) crystal structure.
+    """Contains the indices and subreflections for a Face Centered Cubic (FCC) crystal structure.
     """
     def __init__(self, kappa_sq_a_range):
         
-        self.miller_indices = self.remove_systematic_abscences(
-            generate_miller_index_in_range(kappa_sq_a_range))
+        self.reflection_indices = self.remove_systematic_abscences(
+            generate_indices_in_range(kappa_sq_a_range))
         return 
-    def remove_systematic_abscences(self, miller_indices):
-        n_peaks = miller_indices.shape[0]
-        surviving_miller_index = [] 
+    def remove_systematic_abscences(self, index):
+        n_peaks = index.shape[0]
+        surviving_index = [] 
         for n in range(n_peaks ):
-            h, k, l = miller_indices[n, :]
+            h, k, l = index[n, :]
             if is_reflection_observed_fcc(h, k, l):
-                surviving_miller_index.append([h, k, l])
-        return np.array(surviving_miller_index)
+                surviving_index.append([h, k, l])
+        return np.array(surviving_index)
     
     def generate_subreflections(self, h, k, l):
         """Generate all subreflections obtained as 
@@ -89,84 +89,30 @@ class FCC_structure():
         return result
 
     
-
-class FCC_structure_legacy():
-    """Contains the Miller-indices and subreflections for a Face Centered Cubic (FCC) crystal structure.
-    """
-    def __init__(self):
-        self.miller_indices = [[1, 1, 1],
-                              [2, 0, 0],
-                              [2, 2, 0],
-                              [3, 1, 1],
-                              [2, 2, 2]]
-        self.subreflections = {}
-        
-        self.subreflections['111'] = [[1, 1, 1],
-                                      [-1, 1, 1],
-                                      [1, -1, 1],
-                                      [1,1,-1]]
-        self.subreflections['200'] = [[2, 0, 0]]
-        self.subreflections['220'] = [[2, 2, 0],
-                                      [2, -2, 0]]
-        self.subreflections['222'] = [[2, 2, 2],
-                                      [-2, 2, 2],
-                                     [2, -2, 2],
-                                     [2, 2, -2]]
-        self.subreflections['311'] = [[3, 1, 1], 
-                                     [-3, 1, 1],
-                                     [-3, -1, 1]]
-        return 
-    
-
 class SC_structure():
-    """Contains the Miller-indices for a Simple Cubic (SC) crystal structure.
+    """Contains the indices for a Simple Cubic (SC) crystal structure.
     """
     def __init__(self, kappa_sq_a_range):
-        self.miller_indices = generate_miller_index_in_range(kappa_sq_a_range)
+        self.reflection_indices = generate_indices_in_range(kappa_sq_a_range)
         return 
 
-
-class SC_structure_legacy():
-    """Contains the Miller-indices for a Simple Cubic (SC) crystal structure.
-    """
-    def __init__(self):
-        self.miller_indices = [[1, 0, 0],
-                              [1, 1, 0],
-                              [1, 1, 1],
-                              [2, 0, 0],
-                              [2, 1, 0],
-                              [2, 1, 1],
-                              [2, 2, 0]]
-        return 
 
 
 class BCC_structure():
-    """Contains the Miller-indices for a Body Centered Cubic (BCC) crystal structure.
+    """Contains the indices for a Body Centered Cubic (BCC) crystal structure.
     """
     def __init__(self, kappa_sq_a_range):
         
-        self.miller_indices = self.remove_systematic_abscences(
-            generate_miller_index_in_range(kappa_sq_a_range))
+        self.reflection_indices = self.remove_systematic_abscences(
+            generate_indices_in_range(kappa_sq_a_range))
         return 
-    def remove_systematic_abscences(self, miller_indices):
-        n_peaks = miller_indices.shape[0]
-        surviving_miller_index = [] 
+    def remove_systematic_abscences(self, index):
+        n_peaks = index.shape[0]
+        surviving_index = [] 
         for n in range(n_peaks ):
-            h, k, l = miller_indices[n, :]
+            h, k, l = index[n, :]
             if is_reflection_observed_bcc(h, k, l):
-                surviving_miller_index.append([h, k, l])
-        return np.array(surviving_miller_index)
+                surviving_index.append([h, k, l])
+        return np.array(surviving_index)
 
 
-
-
-class BCC_structure_legacy():
-    """Contains the Miller-indices for a Body Centered Cubic (BCC) crystal structure.
-    """
-    def __init__(self):
-        self.miller_indices = [[1, 1, 0],
-                              [2, 0, 0],
-                              [2, 1, 1],
-                              [2, 2, 0],
-                              [3, 1, 0]]
-        return 

@@ -71,21 +71,21 @@ class Peak():
         return 
         
     def _H(self, h, k, l):
-        """Computes the H function, a quartic combination of the Miller indices."""
+        """Computes the H function, a quartic combination of the indices."""
         sq = h**2 + k**2 + l**2
         return (h**2 * k**2 + k**2 * l**2 + h**2 * l**2) / sq**2
     
     def _C_hkl_without_00(self, h, k, l, q):
-        """Computes the contrast factor for the Miller indices and the q parameter. C_h00 is not included in the calculation."""
+        """Computes the contrast factor for the indices and the q parameter. C_h00 is not included in the calculation."""
         return (1. - q * self._H(h,k,l))
 
 
     def _full_width_half_max(self, a, h, k, l, planar_fault_probability):
-        """Calculate the Full Width at Half Maximum (FWHM) of the peak for a given set of Miller indices and the fault probability parameter.
-        If the sum of the Miller indices is divisible by 3, the FWHM is set to a minimum value. 
+        """Calculate the Full Width at Half Maximum (FWHM) of the peak for a given set of indices and the fault probability parameter.
+        If the sum of the indices is divisible by 3, the FWHM is set to a minimum value. 
         Args:
             a (float): Lattice constant
-            Miller indices: h,k,l must be integers 
+            Indices: h,k,l must be integers 
             planar_fault_probability (float): Can be array as well. Probability of planar faults: either twin or stacking. 
         Returns:
             float: FWHM of the peak
@@ -103,11 +103,9 @@ class Peak():
             return (1 / (3 * a )) * ( self.math.abs(h + k + l) / self.math.sqrt( sqrsum ) ) * factor_due_to_planar_fault
         
     def _delta_hkl(self, a, h, k, l, planar_fault_probability, intrinsic_or_extrinsic = 'intrinsic'):
-        """Computes the delta function for a given set of Miller indices and the probability of the planar faults. delta > 0 only for stacking faults. 
+        """Computes the delta function for a given set of indices and the probability of the planar faults. delta > 0 only for stacking faults. 
         Args:
-            h (int): Miller index
-            k (int): Miller index
-            l (int): Miller index
+            h, k, l (int): index
             planar_fault_probability (float): Probability of planar faults.  
             intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic'. Defaults to 'intrinsic'.
         Returns:
@@ -126,13 +124,11 @@ class Peak():
         return prefactor * (1 / (3 * a )) * ( abssum / self.math.sqrt( sqrsum ) ) * factor_due_to_planar_fault
 
     def fourier_coefficients_planar_fault(self, L, planar_fault_probability, h, k, l, intrinsic_or_extrinsic = 'intrinsic'):
-        """Calculates the Fourier coefficients for the stacking fault or twin fault profile for a given set of wave numbers, planar fault probability and Miller indices.
+        """Calculates the Fourier coefficients for the stacking fault or twin fault profile for a given set of wave numbers, planar fault probability and indices.
         Args:
             L (array): Wave numbers
             planar_fault_probability (float or array): B, or alpha parameters. 
-            h (int): Miller index
-            k (int): Miller index
-            l (int): Miller index
+            h, k, l (int): index
             intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic'. Defaults to 'intrinsic'.
         Returns:
             array: Fourier transform of the crystal structure
@@ -163,15 +159,15 @@ class Peak():
         return (first - second + third) / norm
     
     def fourier_coefficients_dislocation(self, L, rho, Rstar, h, k, l, g, q):
-        """Computes the Fourier coefficients for the dislocation profile for a given set of wave numbers, rho, Rstar, Miller indices, g and q parameters.
+        """Computes the Fourier coefficients for the dislocation profile for a given set of wave numbers, rho, Rstar, indices, g and q parameters.
 
             Args:
                 L (array): Wave numbers
                 rho (float or array): dislocation density
                 Rstar (float or array): cutoff radius for the dislocations
-                h, k, l (int): Miller indices
+                h, k, l (int):  Indices
                 g (float): Peak location
-                q (float or array): parameter characterizing the type of dislocation
+                q (float or array): parameter characterizing the edge/screw character of the dislocations
             Returns:
                 array: Fourier coefficients
         """
@@ -179,16 +175,16 @@ class Peak():
     
 
     def fourier_coefficients_dislocation_reduced_rho(self, L, rhostar, Rstar, h, k, l, g, q):
-        """Computes the Fourier coefficients for the dislocation profile for a given set of wave numbers, rhostar, Rstar, Miller indices, g and q parameters.
+        """Computes the Fourier coefficients for the dislocation profile for a given set of wave numbers, rhostar, Rstar, indices, g and q parameters.
         Uses the reduced density rhostar = rho * b^2 * C_h00
 
             Args:
                 L (array): Wave numbers
                 rhostar (float or array): normalized dislocation density, rhostar = rho * b^2 * C_h00
                 Rstar (float or array): cutoff radius for the dislocations
-                h, k, l (int): Miller indices
+                h, k, l (int): Indices
                 g (float): Peak location
-                q (float or array): parameter characterizing the type of dislocation
+                q (float or array): parameter characterizing the edge/screw character of the dislocations
             Returns:
                 array: Fourier coefficients
         """
@@ -203,9 +199,9 @@ class Peak():
             sigma (float or array): standard deviation of the size distribution
             rho_or_rhostar (float or array): dislocation density or reduced density, depending on the use_reduced_rho flag in the constructor
             Rstar (float or array): Rstar
-            q (float or array): parameter characterizing the type of dislocation
+            q (float or array): parameter characterizing the edge/screw character of the dislocations
             g (float): peak location
-            h, k, l (int): Miller indices
+            h, k, l (int): Indices
             planar_fault_probability (float or array): Stacking fault probability. Only used for the fcc phase. Defaults to None.
             intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic' for stacking faults. Defaults to 'intrinsic'.
 
@@ -267,7 +263,7 @@ def generate_multiple_peaks(single_peak,
         sigma (float or array): standard deviation of the size distribution
         rho_or_rhostar (float or array): dislocation density or reduced density, depending on the use_reduced_rho flag in the constructor
         Rstar (float or array): Cutoff radius for the dislocations
-        q (float or array): _description_
+        q (float or array): parameter characterizing the edge/screw character of dislocations
         peakIntensities (array): Can be a multi-dimensional array containing the peak intensities
         maximalPeakIntensity (int, optional): Normalize the largest peak to this value. Defaults to 1.
         planarFaultProbability (float or array): Probability of planar faults for the fcc phase. Defaults to None.
@@ -275,11 +271,10 @@ def generate_multiple_peaks(single_peak,
         intrinsic_or_extrinsic (string, optional): Can be 'intrinsic' or 'extrinsic' for stacking faults. Defaults to 'intrinsic'.
     Returns:
         array: spectrum 
-
     """
     numberofPeaks = len(peak_intensities)
-    if numberofPeaks > len(single_peak.structure.miller_indices):
-            print('Too many peaks were given for the structure. Max. number of peaks is %s' %len(single_peak.structure.miller_indices))
+    if numberofPeaks > len(single_peak.structure.reflection_indices):
+            print('Too many peaks were given for the structure. Max. number of peaks is %s' %len(single_peak.structure.reflection_indices))
             raise NotImplementedError
 
     if offset is None:
@@ -290,9 +285,9 @@ def generate_multiple_peaks(single_peak,
     spectrum = 1j*single_peak.math.zeros((single_peak.diffraction_vectors_dimensionless.shape[0], peak_intensities.shape[1])) # need this to be a complex array
     L = single_peak.math.fftfreq(single_peak.Nfourier, lengthOfFrame / single_peak.Nfourier).reshape(-1, 1) + 1e-7 # because of a singularity in the wilkens() fn, we regularize L
     for i in range(numberofPeaks):
-        h = single_peak.math.array(single_peak.structure.miller_indices[i][0]) # get Miller indices to make sure of proper broadcast
-        k = single_peak.math.array(single_peak.structure.miller_indices[i][1])
-        l = single_peak.math.array(single_peak.structure.miller_indices[i][2])
+        h = single_peak.math.array(single_peak.structure.reflection_indices[i][0]) # get indices to make sure of proper broadcast
+        k = single_peak.math.array(single_peak.structure.reflection_indices[i][1])
+        l = single_peak.math.array(single_peak.structure.reflection_indices[i][2])
         sqrsum = h**2 + k**2 + l**2 + offset[i, :] # in dimensionless diffraction-vector units the peaks are at h^2 + k^2 + l^2
         g = sqrsum
         intensity = peak_intensities[i, :]  * maximal_peakIntensity

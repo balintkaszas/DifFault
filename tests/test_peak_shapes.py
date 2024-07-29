@@ -1,4 +1,4 @@
-from diffaultpy.utils import shift_each_column_numpy, shift_each_column_torch
+from diffaultpy.math_backend import shift_each_column_numpy, shift_each_column_torch
 from diffaultpy.peak_shapes import Peak, generate_multiple_peaks
 import numpy as np
 import torch

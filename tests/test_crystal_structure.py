@@ -13,7 +13,7 @@ def test_FCC_structure():
                                   [4, 2, 0],
                                   [4, 2, 2]]
     real_ind = np.array(real_ind)
-    assert np.allclose(fcc.miller_indices, real_ind)
+    assert np.allclose(fcc.reflection_indices, real_ind)
     # assert fcc.subreflections['111'] == [[1, 1, 1],
     #                                   [-1, 1, 1],
     #                                   [1, -1, 1],
@@ -38,13 +38,13 @@ def test_BCC_structure():
                                   [2, 2, 0],
                                   [3, 1, 0]]
     real_ind = np.array(real_ind)
-    assert np.allclose(bcc.miller_indices, real_ind)
+    assert np.allclose(bcc.reflection_indices, real_ind)
     return
 
 def test_generate_miller_index_in_range():
-    hkl_sc = crystal_structure.generate_miller_index_in_range(8)
+    hkl_sc = crystal_structure.generate_indices_in_range(8)
     sc = crystal_structure.SC_structure(8)
-    assert np.allclose(np.array(sc.miller_indices), hkl_sc)
+    assert np.allclose(np.array(sc.reflection_indices), hkl_sc)
 
 # if __name__ == "__main__":
 #     test_generate_miller_index_in_range()
