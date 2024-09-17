@@ -33,7 +33,7 @@ pip install -e .
 ## Basic usage 
 After installation, the XRD patterns for an FCC crystal can be simulated by initializing a ```Peak``` object and specifying the microstructural parameters [2] for the function ```generate_multiple_peaks```. 
 
-```
+```python
 from diffaultpy.peak_shapes import Peak, generate_multiple_peaks
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -83,7 +83,21 @@ The ```examples/``` folder contains further examples and demonstrations of the u
 
 ## References
 
-[1] B. Kaszás, P. Nagy, J. Gubicza, DifFault: simulation of diffraction patterns of faulted crystals, _submitted to SoftwareX_, 2024. 
+[1] B. Kaszás, P. Nagy, J. Gubicza, DifFault: simulation of diffraction patterns of faulted crystals, SoftwareX 27, 101860, 2024. 
 
 [2] J. Gubicza, X-ray line profile analysis in materials science, IGI global,
 2014.
+
+## Bibtex 
+The journal paper describing the software can be cited as 
+
+```
+@article{diffault,
+title = {DifFault: Simulation of diffraction patterns of faulted crystals},
+journal = {SoftwareX},
+volume = {27},
+pages = {101860},
+year = {2024},
+author = {Bálint Kaszás and Péter Nagy and Jenő Gubicza},
+}
+```
