@@ -28,10 +28,15 @@ class MathBackend:
 
     def linspace(self, start, stop, num):
         if self.backend == 'torch':
-            return torch.linspace(start, stop, num)
+            return torch.linspace(start, stop, num, device = self.device)
         else:
             return np.linspace(start, stop, num)
-        
+    def sqrt(self, x):
+        if self.backend == 'torch':
+            return torch.sqrt(x)
+        else:
+            return np.sqrt(x)
+            
     def arange(self, start, stop, step = 1):
         if self.backend == 'torch':
             return torch.arange(start, stop, step)
@@ -192,7 +197,7 @@ class MathBackend:
 
     def shift_each_column(self, x, shifts):
         if self.backend == 'torch':
-            return shift_each_column_torch(x, shifts)
+            return shift_each_column_torch(x, shifts, device = self.device)
         else:
             return shift_each_column_numpy(x, shifts)
         
@@ -259,7 +264,7 @@ def shift_each_column_numpy(array, shifts):
     return array[row_indices, np.arange(m)]
     
 
-def shift_each_column_torch(array, shifts):
+def shift_each_column_torch(array, shifts, device = 'cpu'):
     """Shifts each column of the array by the corresponding value in shifts
     Args:
         array (array): array to shift
@@ -268,5 +273,5 @@ def shift_each_column_torch(array, shifts):
         array: shifted array
     """
     N, m = array.shape
-    row_indices = (torch.arange(N).unsqueeze(1) - shifts) % N
+    row_indices = (torch.arange(N, device = device).unsqueeze(1) - shifts) % N
     return array[row_indices, torch.arange(m)]

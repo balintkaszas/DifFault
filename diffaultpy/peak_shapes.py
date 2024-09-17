@@ -63,7 +63,7 @@ class Peak():
                                                 self.max_range_diffraction_vector_dimensionless,
                                                   self.Nfourier)
         self.positive_diffraction_vectors_dimensionless  = self.diffraction_vectors_dimensionless[self.diffraction_vectors_dimensionless >= 0] # kappa^2 * a^2 
-        self.positive_diffraction_vectors = np.sqrt(self.positive_diffraction_vectors_dimensionless) / self.lattice_constant # this has the same dimensions as 1 / a
+        self.positive_diffraction_vectors = self.math.sqrt(self.positive_diffraction_vectors_dimensionless) / self.lattice_constant # this has the same dimensions as 1 / a
         self.structure = get_crystal_structure(self.phase, self.max_range_diffraction_vector_dimensionless)
 
         self.wilkens_function = WilkensFunction(backend, approximation_wilkens, device, dtype)
@@ -284,11 +284,14 @@ def generate_multiple_peaks(single_peak,
 
     spectrum = 1j*single_peak.math.zeros((single_peak.diffraction_vectors_dimensionless.shape[0], peak_intensities.shape[1])) # need this to be a complex array
     L = single_peak.math.fftfreq(single_peak.Nfourier, lengthOfFrame / single_peak.Nfourier).reshape(-1, 1) + 1e-7 # because of a singularity in the wilkens() fn, we regularize L
+    if single_peak.math.backend == 'torch': # move the array to the correct device for torch
+        L = L.to(single_peak.math.device)
     for i in range(numberofPeaks):
         h = single_peak.math.array(single_peak.structure.reflection_indices[i][0]) # get indices to make sure of proper broadcast
         k = single_peak.math.array(single_peak.structure.reflection_indices[i][1])
         l = single_peak.math.array(single_peak.structure.reflection_indices[i][2])
         sqrsum = h**2 + k**2 + l**2 + offset[i, :] # in dimensionless diffraction-vector units the peaks are at h^2 + k^2 + l^2
+
         g = sqrsum
         intensity = peak_intensities[i, :]  * maximal_peakIntensity
         singleSpectrum =  single_peak.generate_convolutional_profile(L, m, sigma, rho_or_rhostar, Rstar, q,  g, h, k, l, planar_fault_probability,

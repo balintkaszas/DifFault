@@ -25,8 +25,12 @@ class WilkensFunction():
             polynomial_fit = np.polyfit(xx_fit, integral, deg = 5) # Fit a 5th order polynomial to the integral  
             coefficients = polynomial_fit[::-1] # reverse the order due to polyfit convention
             coefficients = self.math.array(coefficients.copy())
+            if self.math.backend == 'torch':
+                exponents = self.math.arange(0,6).to(self.math.device)
+            else: 
+                exponents = self.math.arange(0,6)
             self.integrator_for_wilkens = lambda x : self.math.power(x.reshape(-1,1),
-                                                            self.math.arange(0,6)) @ coefficients 
+                                                            exponents) @ coefficients 
         elif self.method == 'interpolation':
             if self.math.backend == 'torch':
                 raise NotImplementedError('Interpolation of the Wilkens function is not implemented for the torch backend')
